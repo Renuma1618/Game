@@ -6,77 +6,97 @@
     <title>Word Scramble Game</title>
     <style>
         body {
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            background-color: #f4f4f4; 
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #ff7eb3, #ff758c, #ff6b81);
+            color: white;
             padding: 20px;
         }
-        #game-container, #leaderboard-container {
-            margin: 20px auto; 
-            width: 60%; 
-            padding: 20px; 
-            background: white; 
-            border-radius: 10px; 
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        #game-container, #player-form, #players-container {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+        h1 { 
+            font-size: 36px; 
+            font-weight: bold;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
         }
         #word {
-            font-size: 28px; 
-            font-weight: bold; 
-            margin-bottom: 10px; 
-            color: #333;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffea00;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
         }
         input, button {
-            margin-top: 10px; 
-            padding: 10px; 
-            border-radius: 5px; 
-            border: 1px solid #ddd; 
-            font-size: 16px;
-        }
-        button {
-            cursor: pointer; 
-            background: #28a745; 
-            color: white; 
-            border: none; 
-            padding: 12px 20px;
-        }
-        button:hover { background: #218838; }
-        #players-container { 
-            text-align: left; 
-            margin-top: 20px; 
-            background: #f9f9f9; 
-            padding: 10px;
+            width: 90%;
+            padding: 12px;
             border-radius: 5px;
-        }
-        .player-score { font-size: 18px; padding: 5px; }
-        #timer { 
-            font-size: 20px; 
-            font-weight: bold; 
-            color: red; 
+            border: none;
+            font-size: 18px;
             margin-top: 10px;
         }
-        .hidden { display: none; }
+        input {
+            background: rgba(255, 255, 255, 0.8);
+            color: black;
+        }
+        button {
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .start-btn {
+            background: #28a745;
+            color: white;
+        }
+        .submit-btn {
+            background: #007bff;
+            color: white;
+        }
+        #message {
+            font-size: 20px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        #timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffea00;
+        }
+        #players-container {
+            text-align: left;
+        }
+        .player-score {
+            font-size: 18px;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
-
-    <h1>Word Scramble Game</h1>
+    <h1>🎉 Word Scramble Game 🎉</h1>
     <div id="player-form">
         <input type="text" id="player-name" placeholder="Enter your name">
-        <button onclick="joinGame()">Join Game</button>
+        <button class="start-btn" onclick="startGame()">Join Game</button>
     </div>
-
-    <div id="game-container" class="hidden">
+    <div id="game-container" style="display: none;">
         <p id="word"></p>
         <input type="text" id="guess" placeholder="Your guess here">
-        <button onclick="checkWord()">Submit</button>
+        <button class="submit-btn" onclick="checkWord()">Submit</button>
         <p id="message"></p>
-        <p>Score: <span id="score">0</span></p>
-        <p>Time Left: <span id="timer">60</span> seconds</p>
-        <p id="correct-answer" class="hidden" style="color: red; font-weight: bold;"></p>
+        <p>🎯 Score: <span id="score">0</span></p>
+        <p>⏳ Time Left: <span id="timer">25</span> seconds</p>
     </div>
-
-    <div id="leaderboard-container">
-        <h2>Leaderboard (Host Only)</h2>
+    <div id="players-container">
+        
         <ul id="players-list"></ul>
     </div>
 
@@ -85,7 +105,7 @@
         let currentWord = "";
         let shuffledWord = "";
         let score = 0;
-        let timeLeft = 60;
+        let timeLeft = 25;
         let timer;
         let playerName = "";
         let players = {};
@@ -100,7 +120,6 @@
             document.getElementById("word").innerText = shuffledWord;
             document.getElementById("guess").value = "";
             document.getElementById("message").innerText = "";
-            document.getElementById("correct-answer").classList.add("hidden");
             resetTimer();
         }
 
@@ -109,24 +128,24 @@
             if (guess === currentWord) {
                 score++;
                 players[playerName] = score;
-                document.getElementById("message").innerText = "Correct!";
+                document.getElementById("message").innerText = "✅ Correct!";
                 document.getElementById("score").innerText = score;
                 updateLeaderboard();
-                newWord();
+                setTimeout(newWord, 1000); // Move to new word after 1 second
             } else {
-                document.getElementById("message").innerText = "Wrong! Try again.";
+                document.getElementById("message").innerText = "❌ Wrong! Try again.";
             }
         }
 
-        function joinGame() {
-            playerName = document.getElementById("player-name").value.trim();
-            if (playerName === "") {
+        function startGame() {
+            playerName = document.getElementById("player-name").value;
+            if (playerName.trim() === "") {
                 alert("Please enter your name to start the game.");
                 return;
             }
             players[playerName] = 0;
             document.getElementById("player-form").style.display = "none";
-            document.getElementById("game-container").classList.remove("hidden");
+            document.getElementById("game-container").style.display = "block";
             updateLeaderboard();
             newWord();
             startTimer();
@@ -140,15 +159,14 @@
                     document.getElementById("timer").innerText = timeLeft;
                 } else {
                     clearInterval(timer);
-                    document.getElementById("correct-answer").innerText = `Time's up! The correct word was: ${currentWord}`;
-                    document.getElementById("correct-answer").classList.remove("hidden");
-                    setTimeout(newWord, 3000);
+                    document.getElementById("message").innerHTML = `⏳ Time's up! The correct word was: <strong>${currentWord}</strong>`;
+                    setTimeout(newWord, 2000); // Show answer for 2 seconds before new word
                 }
             }, 1000);
         }
 
         function resetTimer() {
-            timeLeft = 60;
+            timeLeft = 25;
             document.getElementById("timer").innerText = timeLeft;
             startTimer();
         }
@@ -164,6 +182,5 @@
             });
         }
     </script>
-
 </body>
 </html>
