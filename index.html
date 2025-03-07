@@ -98,10 +98,20 @@
     </div>
     <script>
         const words = [
-           "misspell", "reverse", "delicious", "arrogant",  "jagadeesh", 
+            "misspell", "reverse", "delicious", "arrogant", "jagadeesh", 
             "component", "framework", "responsive", "webpack", "bugfix", 
-            "breakfast", "scissor", "common", "debugging", "syntaxerror", "microsoft", "seperate", "funny", "nervous", "consistency",
+            "breakfast", "scissor", "common", "debugging", "syntaxerror", "microsoft", "separate", "funny", "nervous", "consistency",
         ];
+
+        // Function to shuffle the words array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+        }
+
+        shuffleArray(words); // Shuffle words when the script loads
 
         let currentWord = "";
         let shuffledWord = "";
