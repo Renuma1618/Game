@@ -94,50 +94,55 @@
         <p id="message"></p>
         <p>🎯 Score: <span id="score">0</span></p>
         <p>⏳ Time Left: <span id="timer">25</span> seconds</p>
+        <p>✅ Correct: <span id="correct-count">0</span> | ❌ Wrong: <span id="wrong-count">0</span></p>
     </div>
-    <div id="players-container">
-        
-        <ul id="players-list"></ul>
-    </div>
-
     <script>
         const words = [
-    "misspell", "reverse", "delicious", "arrogant", "Jagadeesh", 
-    "component", "framework", "responsive", "webpack", "bugfix", 
-    "breakfast", "scissor", "common", "debugging", "syntaxerror","Google","seperate","Rhythm","nervous","consistency"]
+           "misspell", "reverse", "delicious", "arrogant",  "jagadeesh", 
+            "component", "framework", "responsive", "webpack", "bugfix", 
+            "breakfast", "scissor", "common", "debugging", "syntaxerror", "microsoft", "seperate", "funny", "nervous", "consistency",
+        ];
 
         let currentWord = "";
         let shuffledWord = "";
         let score = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
         let timeLeft = 25;
         let timer;
         let playerName = "";
-        let players = {};
-
+        let attemptsLeft = 1;
+        
         function shuffle(word) {
             return word.split('').sort(() => Math.random() - 0.5).join('');
         }
 
         function newWord() {
-            currentWord = words[Math.floor(Math.random() * words.length)];
+            if (words.length === 0) {
+                document.getElementById("game-container").innerHTML = `<h2>Game Over!</h2><p>✅ Correct: ${correctCount} | ❌ Wrong: ${wrongCount}</p>`;
+                return;
+            }
+            currentWord = words.shift();
             shuffledWord = shuffle(currentWord);
             document.getElementById("word").innerText = shuffledWord;
             document.getElementById("guess").value = "";
             document.getElementById("message").innerText = "";
             resetTimer();
+            attemptsLeft = 1;
         }
 
         function checkWord() {
             let guess = document.getElementById("guess").value.toLowerCase();
             if (guess === currentWord) {
                 score++;
-                players[playerName] = score;
+                correctCount++;
                 document.getElementById("message").innerText = "✅ Correct!";
                 document.getElementById("score").innerText = score;
-                updateLeaderboard();
-                setTimeout(newWord, 1000); // Move to new word after 1 second
-            } else {
-                document.getElementById("message").innerText = "❌ Wrong! Try again.";
+                document.getElementById("correct-count").innerText = correctCount;
+                setTimeout(newWord, 1000);
+            } else if (attemptsLeft > 0) {
+                document.getElementById("message").innerText = "❌ Try again!";
+                attemptsLeft--;
             }
         }
 
@@ -147,12 +152,9 @@
                 alert("Please enter your name to start the game.");
                 return;
             }
-            players[playerName] = 0;
             document.getElementById("player-form").style.display = "none";
             document.getElementById("game-container").style.display = "block";
-            updateLeaderboard();
             newWord();
-            startTimer();
         }
 
         function startTimer() {
@@ -164,7 +166,9 @@
                 } else {
                     clearInterval(timer);
                     document.getElementById("message").innerHTML = `⏳ Time's up! The correct word was: <strong>${currentWord}</strong>`;
-                    setTimeout(newWord, 2000); // Show answer for 2 seconds before new word
+                    wrongCount++;
+                    document.getElementById("wrong-count").innerText = wrongCount;
+                    setTimeout(newWord, 2000);
                 }
             }, 1000);
         }
@@ -173,17 +177,6 @@
             timeLeft = 25;
             document.getElementById("timer").innerText = timeLeft;
             startTimer();
-        }
-
-        function updateLeaderboard() {
-            let leaderboard = Object.entries(players).sort((a, b) => b[1] - a[1]);
-            let list = document.getElementById("players-list");
-            list.innerHTML = "";
-            leaderboard.forEach(player => {
-                let li = document.createElement("li");
-                li.innerText = `${player[0]}: ${player[1]} points`;
-                list.appendChild(li);
-            });
         }
     </script>
 </body>
